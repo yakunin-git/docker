@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  bind-dns-server:
+    image: bind-images:latest
+    container_name: bind-dns-server
+    hostname: bind-dns-server
+    restart: always
+    build: ./
+    volumes:
+       - ./zone:/etc/bind/zone
+    network_mode: "host"
+
+    healthcheck:
+      test: ["CMD", "named-checkconf", "/etc/bind/named.conf"]
+      interval: 60s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+    deploy:
+      resources:
+        limits:
+          memory: 250Mb

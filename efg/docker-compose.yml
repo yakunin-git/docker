@@ -1,0 +1,51 @@
+version: '3.2'
+services:
+
+  fluent-bit:
+    image: fluent/fluent-bit
+    container_name: fluent-bit
+    restart: always
+    volumes:
+      - ./conf:/fluent-bit/etc
+      - /var/log:/var/log
+    networks:
+      - elastic
+
+  elasticsearch:
+    image: elasticsearch:8.2.0
+    container_name: elasticsearch
+    restart: always
+    volumes:
+      - ./elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    environment:
+      - network.host=0.0.0.0
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=false
+      - cluster.initial_master_nodes=es01
+      - xpack.security.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms1G -Xmx1G"
+    networks:
+      - elastic
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    links:
+      - "elasticsearch"
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
