@@ -1,0 +1,38 @@
+version: "3.2"
+services:
+  vsftpd:
+    image: vsftpd:alpine
+    container_name: vsftpd
+    hostname: vsftpd
+    build: ./src
+    restart: always
+    volumes:
+      - ./ftp:/ftp
+      - ./vsftpd.log:/tmp/vsftpd.log
+    tty: true
+    ports:
+      - 20:20
+      - 21:21
+      - 20050-20055:20050-20055
+    env_file: .env
+    cap_drop:
+      - NET_ADMIN
+      - SYS_ADMIN
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          memory: 50M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: 2
