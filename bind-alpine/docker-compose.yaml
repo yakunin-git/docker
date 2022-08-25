@@ -1,0 +1,23 @@
+version: "3.2"
+services:
+  bind:
+    image: bind:alpine
+    container_name: bind
+    hostname: bind-dns
+    build: ./src
+    restart: always
+    volumes:
+      - ./zone:/etc/bind/zone
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: 2
+    network_mode: host
