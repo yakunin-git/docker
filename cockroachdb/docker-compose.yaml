@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+
+  cockroach01:
+    image: cockroachdb/cockroach
+    container_name: cdb01
+    hostname: cdb01
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./cdb01:/cockroach/cockroach-data
+      - ./certs:/certs
+    ports:
+      - 26257:26257
+      - 8080:8080
+    command: start --join=cdb01,cdb02,cdb03 --listen-addr=:26257 --http-addr=:8080 --certs-dir=/certs
+    networks:
+      - cockroach
+
+  cockroach02:
+    image: cockroachdb/cockroach
+    container_name: cdb02
+    hostname: cdb02
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./cdb02:/cockroach/cockroach-data
+      - ./certs:/certs
+    command: start --join=cdb01,cdb02,cdb03 --listen-addr=:26257 --http-addr=:8080 --certs-dir=/certs
+    networks:
+      - cockroach
+
+  cockroach03:
+    image: cockroachdb/cockroach
+    container_name: cdb03
+    hostname: cdb03
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./cdb03:/cockroach/cockroach-data
+      - ./certs:/certs
+    command: start --join=cdb01,cdb02,cdb03 --listen-addr=:26257 --http-addr=:8080 --certs-dir=/certs
+    networks:
+      - cockroach
+
+networks:
+  cockroach:
+    driver: bridge
