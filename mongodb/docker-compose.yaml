@@ -1,0 +1,56 @@
+version: "3.8"
+services:
+  mongodb-server-1:
+    image: mongodb-server:latest
+    container_name: mongodb-server-1
+    hostname: mongodb-server-1
+    restart: always
+    build: ./src
+    volumes:
+      - ./data/1:/data
+      - ./src/mongod_node_1.conf:/etc/mongod.conf
+      - ./src/ssl:/etc/ssl
+      - ./mongod.log:/var/log/mongodb/mongod.log
+
+    healthcheck:
+      test: ["CMD", "nc", "-zvw3", "mongodb-server-1", "27017"]
+      interval: 60s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  mongodb-server-2:
+    image: mongodb-server:latest
+    container_name: mongodb-server-2
+    hostname: mongodb-server-2
+    restart: always
+    build: ./src
+    volumes:
+      - ./data/2:/data
+      - ./src/mongod_node_2.conf:/etc/mongod.conf
+      - ./src/ssl:/etc/ssl
+
+    healthcheck:
+      test: ["CMD", "nc", "-zvw3", "mongodb-server-2", "27017"]
+      interval: 60s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  mongodb-server-3:
+    image: mongodb-server:latest
+    container_name: mongodb-server-3
+    hostname: mongodb-server-3
+    restart: always
+    build: ./src
+    volumes:
+      - ./data/3:/data
+      - ./src/mongod_node_3.conf:/etc/mongod.conf
+      - ./src/ssl:/etc/ssl
+
+    healthcheck:
+      test: ["CMD", "nc", "-zvw3", "mongodb-server-3", "27017"]
+      interval: 60s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
